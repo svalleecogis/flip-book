@@ -3,5 +3,46 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-  }
+    "flip-book": {
+      "projectType": "library",
+      "root": "projects/flip-book",
+      "sourceRoot": "projects/flip-book/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "tsConfig": "projects/flip-book/tsconfig.lib.json",
+            "project": "projects/flip-book/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/flip-book/tsconfig.lib.prod.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/flip-book/src/test.ts",
+            "tsConfig": "projects/flip-book/tsconfig.spec.json",
+            "karmaConfig": "projects/flip-book/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/flip-book/tsconfig.lib.json",
+              "projects/flip-book/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "defaultProject": "flip-book"
 }
