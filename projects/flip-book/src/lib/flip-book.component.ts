@@ -4,8 +4,15 @@ import { FlipBookService } from './flip-book.service';
 
 declare var $:any;
 
+export interface BookController{
+  cmdZoomIn();
+  cmdZoomOut();
+  cmdBackward();
+  cmdForward();
+}
 export interface Book{
   dispose();
+  ctrl:BookController
 }
 @Component({
   selector: 'cg-flip-book',
@@ -90,4 +97,21 @@ export class FlipBookComponent implements OnInit,OnDestroy {
 
   }
 
+  zoomIn(){
+    this.book.ctrl.cmdZoomIn();
+  }
+
+  zoomOut(){
+    this.book.ctrl.cmdZoomOut();
+  }
+
+  backward(){
+    this.book.ctrl.cmdBackward();
+  }
+  
+  forward(){
+    this.book.ctrl.cmdForward();
+  }
+
+  
 }
