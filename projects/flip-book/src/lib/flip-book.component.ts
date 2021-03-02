@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, ElementRef, EventEmitter, Inject, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Inject, Input, NgZone, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FlipBookService } from './flip-book.service';
 
 declare var $:any;
@@ -9,11 +9,58 @@ export interface BookController{
   cmdZoomOut();
   cmdBackward();
   cmdForward();
-  book:any;
+  goToPage(page:number);
+
+ 
+  // book:any;
+}
+export interface BookProps{
+  height?:number;
+  width?:number;
+  gravity?:number;
+  cachedPages?:number;
+
+  pagesForPredicting?:number;
+  preloadPages?:number;
+
+  sheet?:{
+    startVelocity?:number;
+    wave?:number;
+    shape?:number;
+  },
+  cover?:{
+    padding?:number;
+  }
+}
+export interface ControlsProps{
+ 
+  lighting? : {
+    default?:number;
+    min?:number;
+    max?:number;
+    levels?:number;
+  },
+  pan? : {
+    speed?:number;
+  },
+  scale? : {
+    default?:number;
+    min?:number;
+    max?:number;
+    levels?:number;
+  }
+  loadingAnimation?:{
+    book?:boolean;
+    skin?:boolean;
+  },
+  autoResolution?: {
+    enabled?:boolean;
+    coefficient?:number;
+  }
 }
 export interface Book{
   dispose();
-  ctrl:BookController
+  ctrl:BookController;
 }
 @Component({
   selector: 'cg-flip-book',
@@ -24,9 +71,9 @@ export interface Book{
   .container {
     height: 95vh;
     width: 95%;
-    margin: 20px auto;
-    border: 2px solid red;
-    box-shadow: 0 0 5px red;
+    // margin: 20px auto;
+    // border: 2px solid red;
+    // box-shadow: 0 0 5px red;
   }
 `
   ]
@@ -37,17 +84,23 @@ export class FlipBookComponent implements OnInit,OnDestroy {
 
   @Input() templateHtml:string
 
-  @ViewChild('container') container:ElementRef;
+  @ViewChild('container',{static : true}) container:ElementRef;
   
-  page:number;
+  @Input() page:number;
+
+  @Input() controlsProps:ControlsProps;
+
+  @Input() sound:boolean = false;
+
   pages:number;
   
-  @Output('page') pageChange = new EventEmitter<number>();
-  @Output('pages') pagesChange = new EventEmitter<number>();
+  @Output('pageChange') pageChange = new EventEmitter<number>();
+  @Output('pagesChange') pagesChange = new EventEmitter<number>();
 
   book:Book;
 
   constructor(
+    private zone:NgZone,
     @Inject(DOCUMENT) private readonly document: any,
     private readonly svc:FlipBookService
   ) { }
@@ -67,7 +120,9 @@ export class FlipBookComponent implements OnInit,OnDestroy {
   }
 
   ngOnDestroy(): void {
+    console.log("FLIPBOOK : ngOnDestroy")
    if(this.book){
+    console.log("FLIPBOOK : dispose()")
      this.book.dispose();
    }
   }
@@ -87,8 +142,9 @@ export class FlipBookComponent implements OnInit,OnDestroy {
     this.book = $(this.container.nativeElement).FlipBook({
       // pdf: `${pathBase}/books/pdf/FoxitPdfSdk.pdf`,
       pdf : this.pdfUrl,
+      controlsProps : this.controlsProps,
       propertiesCallback: (props) => {
-        console.log("::: propertiesCallback",props);
+        // console.log("::: propertiesCallback",props);
 
         props.cssLayersLoader = (n, clb) => {// n - page number
           clb([{
@@ -113,9 +169,12 @@ export class FlipBookComponent implements OnInit,OnDestroy {
                   // console.log('show');
                 },
                 shown: () => {
-                    console.log('shown'+props.scene.ctrl.getPageForGUI());
-                   this.page = props.scene.ctrl.getPageForGUI();
-                   this.pageChange.next(this.page);
+                    // console.log('shown'+props.scene.ctrl.getPageForGUI());
+                    this.zone.run(()=>{
+                      this.page = props.scene.ctrl.getPageForGUI();
+                      this.pageChange.next(this.page);
+                    })
+                  
                 },
                 dispose: function() {
                   // console.log('dispose');
@@ -138,12 +197,27 @@ export class FlipBookComponent implements OnInit,OnDestroy {
             href: `${pathBase}/css/font-awesome.min.css`
           }
         ],
-        script: `${pathBase}/js/default-book-view.js`
+        script: `${pathBase}/js/default-book-view.js`,
+        sounds: this.sound?{
+          startFlip: `${pathBase}/sounds/start-flip.mp3`,
+          endFlip: `${pathBase}/sounds/end-flip.mp3`
+        }:undefined
       },
       ready: (scene) => { // optional function - this function executes when loading is complete
 
-        this.pages = scene.ctrl.book.getPages();
-        this.pagesChange.next(this.pages);
+        
+        this.zone.run(()=>{
+          this.pages = scene.ctrl.book.getPages();
+          this.pagesChange.next(this.pages);
+
+          if(this.page){
+            scene.ctrl.goToPage(this.page-1);
+          }
+
+        })
+        
+
+       
         // this.book.ctrl.book.addEventListener('loadedPage',(value)=>{
         //   console.log('loadPage....',value)
         // },true)
