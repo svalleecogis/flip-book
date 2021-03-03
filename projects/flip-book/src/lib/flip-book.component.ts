@@ -69,11 +69,8 @@ export interface Book{
   `,
   styles: [`
   .container {
-    height: 95vh;
-    width: 95%;
-    // margin: 20px auto;
-    // border: 2px solid red;
-    // box-shadow: 0 0 5px red;
+    height: 100%;
+    width: 100%;
   }
 `
   ]
