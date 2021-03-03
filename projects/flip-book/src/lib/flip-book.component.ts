@@ -117,10 +117,10 @@ export class FlipBookComponent implements OnInit,OnDestroy {
   }
 
   ngOnDestroy(): void {
-    console.log("FLIPBOOK : ngOnDestroy")
+    // console.log("FLIPBOOK : ngOnDestroy")
    if(this.book){
     console.log("FLIPBOOK : dispose()")
-     this.book.dispose();
+    //  this.book.dispose();
    }
   }
 
