@@ -1,6 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
 import { ReplaySubject, Observable, forkJoin, concat } from 'rxjs';
+import { FlipBookConfiguration } from './flip-book-configuration';
 
 @Injectable({
   providedIn: 'root'
@@ -9,10 +10,23 @@ export class FlipBookService {
 
   private _loadedLibraries: { [url: string]: ReplaySubject<any> } = {};
 
-  constructor(@Inject(DOCUMENT) private readonly document: any) {}
+  constructor(
+    @Inject(DOCUMENT) private readonly document: any,
+    private readonly libConf:FlipBookConfiguration
+    ) {}
 
   lazyLoad(): Observable<any> {
-    const pathBase = "./assets/flip-book";
+
+   
+
+    let pathBase = "./assets";
+
+    if(this.libConf?.pathLibDir){
+      pathBase = this.libConf.pathLibDir;
+    }
+
+    console.log("LIB CONF PATH="+pathBase);
+  
 
     return forkJoin([
       this.loadScript(`${pathBase}/js/jquery.min.js`),

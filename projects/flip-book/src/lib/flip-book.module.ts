@@ -1,5 +1,6 @@
-import { NgModule } from '@angular/core';
+import { ModuleWithProviders, NgModule } from '@angular/core';
 import { FlipBookComponent } from './flip-book.component';
+import { FlipBookConfiguration } from './flip-book-configuration';
 
 
 
@@ -15,4 +16,18 @@ import { FlipBookComponent } from './flip-book.component';
   ],
   exports: [FlipBookComponent]
 })
-export class FlipBookModule { }
+export class FlipBookModule {
+  static forRoot(
+    libConfiguration?: FlipBookConfiguration
+  ): ModuleWithProviders<FlipBookModule> {
+    return {
+      ngModule: FlipBookModule,
+      providers: [
+        {
+          provide: FlipBookConfiguration,
+          useValue: libConfiguration,
+        },
+      ],
+    };
+  }
+ }

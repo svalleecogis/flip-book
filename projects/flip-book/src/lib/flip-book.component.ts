@@ -77,7 +77,7 @@ export interface Book{
 })
 export class FlipBookComponent implements OnInit,OnDestroy {
 
-  @Input() pdfUrl:string;
+  @Input() src:string;
 
   @Input() templateHtml:string
 
@@ -138,7 +138,7 @@ export class FlipBookComponent implements OnInit,OnDestroy {
 
     this.book = $(this.container.nativeElement).FlipBook({
       // pdf: `${pathBase}/books/pdf/FoxitPdfSdk.pdf`,
-      pdf : this.pdfUrl,
+      pdf : this.src,
       controlsProps : this.controlsProps,
       propertiesCallback: (props) => {
         // console.log("::: propertiesCallback",props);
