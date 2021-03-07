@@ -56,7 +56,12 @@ export interface ControlsProps{
   autoResolution?: {
     enabled?:boolean;
     coefficient?:number;
-  }
+  },
+  actions?: {
+    cmdSinglePage ?: {
+      active? : false,
+    }
+   }
 }
 export interface Book{
   dispose();
@@ -85,7 +90,19 @@ export class FlipBookComponent implements OnInit,OnDestroy {
   
   @Input() page:number;
 
-  @Input() controlsProps:ControlsProps;
+  @Input() controlsProps:ControlsProps =  {
+    scale : {
+      default : 0.9,
+      min : 0.9,
+      max : 2
+    },
+    actions: {
+      cmdSinglePage: {
+        active : false,
+      },
+     
+     }
+  }
 
   @Input() sound:boolean = false;
 
@@ -201,13 +218,20 @@ export class FlipBookComponent implements OnInit,OnDestroy {
         }:undefined
       },
       ready: (scene) => { // optional function - this function executes when loading is complete
-
+        // console.log("*** READY",scene)
         
+
         this.zone.run(()=>{
-          this.pages = scene.ctrl.book.getPages();
+          // this.pages = scene.ctrl.book.getPages();
+          const numPages =  scene.pdfLinksHandler.pdf.handler.numPages;
+          this.pages = numPages;
           this.pagesChange.next(this.pages);
 
-          if(this.page){
+          if(numPages == 1){
+            scene.ctrl.cmdBackward = ()=>{};
+            scene.ctrl.cmdForward = ()=>{}
+          }
+          else if(this.page){
             scene.ctrl.goToPage(this.page-1);
           }
 
