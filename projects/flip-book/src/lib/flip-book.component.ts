@@ -59,7 +59,7 @@ export interface ControlsProps{
   },
   actions?: {
     cmdSinglePage ?: {
-      active? : false,
+      active? : boolean,
     }
    }
 }
