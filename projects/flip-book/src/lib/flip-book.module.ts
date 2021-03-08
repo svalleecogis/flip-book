@@ -6,7 +6,7 @@ import { FlipBookConfiguration } from './flip-book-configuration';
 
 (<any>window).PDFJS_LOCALE = {
   pdfJsWorker: 'assets/flip-book/js/pdf.worker.js',
-  pdfJsCMapUrl: 'assets/flip-book/cmaps'
+  pdfJsCMapUrl: 'assets/flip-book/cmaps/'
 };
 
 
