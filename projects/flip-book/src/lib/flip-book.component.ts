@@ -171,16 +171,16 @@ export class FlipBookComponent implements OnInit,OnDestroy {
               // console.log('props',props);
             
               return { // set of callbacks
-                init : function(c,a){
-                  c.find(".page .go-page").on("click", function(e) {
-                    e.preventDefault();
+                // init : function(c,a){
+                //   c.find(".page .go-page").on("click", function(e) {
+                //     e.preventDefault();
 
-                    var page = parseInt(a.$(e.target).attr("data-page-n"));
-                    console.log(page);
-                  });
+                //     var page = parseInt(a.$(e.target).attr("data-page-n"));
+                //     console.log(page);
+                //   });
 
                   
-                },
+                // },
                 hide: function() {
                   // console.log('hide');
                 },
