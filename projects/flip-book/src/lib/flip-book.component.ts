@@ -12,7 +12,7 @@ export interface BookController{
   goToPage(page:number);
 
  
-  // book:any;
+  book:any;
 }
 export interface BookProps{
   height?:number;
@@ -155,6 +155,7 @@ export class FlipBookComponent implements OnInit,OnDestroy {
 
     this.book = $(this.container.nativeElement).FlipBook({
       // pdf: `${pathBase}/books/pdf/FoxitPdfSdk.pdf`,
+      // pages : 2,
       pdf : this.src,
       controlsProps : this.controlsProps,
       propertiesCallback: (props) => {
@@ -170,6 +171,16 @@ export class FlipBookComponent implements OnInit,OnDestroy {
               // console.log('props',props);
             
               return { // set of callbacks
+                init : function(c,a){
+                  c.find(".page .go-page").on("click", function(e) {
+                    e.preventDefault();
+
+                    var page = parseInt(a.$(e.target).attr("data-page-n"));
+                    console.log(page);
+                  });
+
+                  
+                },
                 hide: function() {
                   // console.log('hide');
                 },
@@ -185,7 +196,8 @@ export class FlipBookComponent implements OnInit,OnDestroy {
                 shown: () => {
                     // console.log('shown'+props.scene.ctrl.getPageForGUI());
                     this.zone.run(()=>{
-                      this.page = props.scene.ctrl.getPageForGUI();
+                      //this.page = props.scene.ctrl.getPageForGUI();
+                      this.page = props.scene.ctrl.getPage();
                       this.pageChange.next(this.page);
                     })
                   
@@ -197,6 +209,9 @@ export class FlipBookComponent implements OnInit,OnDestroy {
             }
           }]);
         };
+
+        props.sheet.color = 0x0080FF;
+        props.cover.padding = 0.002;
 
         return props;
       },
@@ -217,13 +232,33 @@ export class FlipBookComponent implements OnInit,OnDestroy {
           endFlip: `${pathBase}/sounds/end-flip.mp3`
         }:undefined
       },
+      pdfLinks: {
+        handler: function(type, destination) { // type: 'internal' (destination - page number), 'external' (destination - url)
+        if(type == 'internal'){
+          return false
+        }else{
+          return true; // true - prevent default handler, false - call default handler
+        }
+          
+        }
+      },
       ready: (scene) => { // optional function - this function executes when loading is complete
         // console.log("*** READY",scene)
         
+        scene.ctrl.book.getPages = ()=>{
+          return scene.pdfLinksHandler.pdf.handler.numPages;
+        }
 
         this.zone.run(()=>{
           // this.pages = scene.ctrl.book.getPages();
-          const numPages =  scene.pdfLinksHandler.pdf.handler.numPages;
+          // let numPages =  scene.pdfLinksHandler.pdf.handler.numPages;
+
+          // if(numPages>1){
+          //   numPages = scene.ctrl.book.getPages();
+          // }
+
+          let numPages = scene.ctrl.book.getPages();
+
           this.pages = numPages;
           this.pagesChange.next(this.pages);
 
@@ -232,7 +267,7 @@ export class FlipBookComponent implements OnInit,OnDestroy {
             scene.ctrl.cmdForward = ()=>{}
           }
           else if(this.page){
-            scene.ctrl.goToPage(this.page-1);
+            scene.ctrl.goToPage(this.page);
           }
 
         })
@@ -258,10 +293,13 @@ export class FlipBookComponent implements OnInit,OnDestroy {
   }
 
   backward(){
+    console.log("this.book.getPage()"+this.book.ctrl.book.getPage())
     this.book.ctrl.cmdBackward();
   }
   
   forward(){
+    console.log("this.book.getPage()"+this.book.ctrl.book.getPage())
+    console.log("this.book.p.sheets"+this.book.ctrl.book.p.sheets)
     this.book.ctrl.cmdForward();
   }
 
