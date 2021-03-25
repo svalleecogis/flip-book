@@ -196,8 +196,8 @@ export class FlipBookComponent implements OnInit,OnDestroy {
                 shown: () => {
                     // console.log('shown'+props.scene.ctrl.getPageForGUI());
                     this.zone.run(()=>{
-                      //this.page = props.scene.ctrl.getPageForGUI();
-                      this.page = props.scene.ctrl.getPage();
+                      this.page = props.scene.ctrl.getPageForGUI();
+                      // this.page = props.scene.ctrl.getPage();
                       this.pageChange.next(this.page);
                     })
                   
@@ -210,8 +210,8 @@ export class FlipBookComponent implements OnInit,OnDestroy {
           }]);
         };
 
-        props.sheet.color = 0x0080FF;
-        props.cover.padding = 0.002;
+        // props.sheet.color = 0x0080FF;
+        // props.cover.padding = 0.002;
 
         return props;
       },
@@ -245,9 +245,9 @@ export class FlipBookComponent implements OnInit,OnDestroy {
       ready: (scene) => { // optional function - this function executes when loading is complete
         // console.log("*** READY",scene)
         
-        scene.ctrl.book.getPages = ()=>{
-          return scene.pdfLinksHandler.pdf.handler.numPages;
-        }
+        // scene.ctrl.book.getPages = ()=>{
+        //   return scene.pdfLinksHandler.pdf.handler.numPages;
+        // }
 
         this.zone.run(()=>{
           // this.pages = scene.ctrl.book.getPages();
